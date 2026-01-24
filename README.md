@@ -15,6 +15,14 @@
 
 ---
 
+> **Note**: This is a fork of [xing5/mcp-google-sheets](https://github.com/xing5/mcp-google-sheets) with a fix for Gemini API schema validation errors.
+>
+> **Fixed Issue**: `GenerateContentRequest.tools[...].parameters.properties[...].items.items: missing field`
+>
+> Changed `List[List[Any]]` to `List[List[CellValue]]` where `CellValue = Union[str, int, float, bool, None]` to properly specify nested array item types.
+
+---
+
 ## 🤔 What is this?
 
 `mcp-google-sheets` is a Python-based MCP server that acts as a bridge between any MCP-compatible client (like Claude Desktop) and the Google Sheets API. It allows you to interact with your Google Spreadsheets using a defined set of tools, enabling powerful automation and data manipulation workflows driven by AI.
