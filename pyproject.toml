@@ -1,6 +1,6 @@
 [project]
 name = "mcp-google-sheets"
-version = "0.1.1"
+version = "0.2.0"
 description = "This MCP server integrates with your Google Drive and Google Sheets, to enable creating and modifying spreadsheets. (Forked with Gemini API schema fix)"
 readme = "README.md"
 requires-python = ">=3.10"

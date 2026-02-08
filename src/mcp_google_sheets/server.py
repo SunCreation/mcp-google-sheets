@@ -1001,19 +1001,20 @@ def list_spreadsheets(
     else:
         print("Searching for spreadsheets in 'My Drive'")
 
-    # List spreadsheets
-    results = (
-        drive_service.files()
-        .list(
-            q=query,
-            spaces="drive",
-            includeItemsFromAllDrives=True,
-            supportsAllDrives=True,
-            fields="files(id, name)",
-            orderBy="modifiedTime desc",
-        )
-        .execute()
+    # Determine corpora: if searching in a specific folder on a shared drive,
+    # use allDrives to ensure shared drive files are found
+    list_params = dict(
+        q=query,
+        spaces="drive",
+        corpora="allDrives",
+        includeItemsFromAllDrives=True,
+        supportsAllDrives=True,
+        fields="files(id, name)",
+        orderBy="modifiedTime desc",
     )
+
+    # List spreadsheets
+    results = drive_service.files().list(**list_params).execute()
 
     spreadsheets = results.get("files", [])
 
@@ -1151,12 +1152,13 @@ def list_folders(
         query += " and 'root' in parents"
         print("Searching for folders in 'My Drive' root")
 
-    # List folders
+    # List folders — use allDrives to include shared drive folders
     results = (
         drive_service.files()
         .list(
             q=query,
             spaces="drive",
+            corpora="allDrives",
             includeItemsFromAllDrives=True,
             supportsAllDrives=True,
             fields="files(id, name, parents)",
@@ -1186,7 +1188,10 @@ def list_folders(
     ),
 )
 def search_spreadsheets(
-    query: str, max_results: int = 20, ctx: Context = None
+    query: str,
+    max_results: int = 20,
+    drive_id: Optional[str] = None,
+    ctx: Context = None,
 ) -> List[Dict[str, Any]]:
     """
     Search for spreadsheets in Google Drive by name or content.
@@ -1195,6 +1200,9 @@ def search_spreadsheets(
         query: Search query string. Searches in file name and content.
                Examples: "budget 2024", "sales report", "project tracker"
         max_results: Maximum number of results to return (default 20, max 100)
+        drive_id: Optional shared drive ID to search within.
+                  If provided, searches only in that specific shared drive.
+                  If not provided, searches across all drives (My Drive + all shared drives).
 
     Returns:
         List of matching spreadsheets with their ID, name, and metadata
@@ -1211,20 +1219,27 @@ def search_spreadsheets(
         f"(name contains '{query}' or fullText contains '{query}')"
     )
 
+    # Determine corpora based on drive_id
+    if drive_id:
+        corpora = "drive"
+    else:
+        corpora = "allDrives"
+
     try:
-        results = (
-            drive_service.files()
-            .list(
-                q=search_query,
-                pageSize=max_results,
-                spaces="drive",
-                includeItemsFromAllDrives=True,
-                supportsAllDrives=True,
-                fields="files(id, name, createdTime, modifiedTime, owners, webViewLink)",
-                orderBy="modifiedTime desc",
-            )
-            .execute()
+        list_params = dict(
+            q=search_query,
+            pageSize=max_results,
+            spaces="drive",
+            corpora=corpora,
+            includeItemsFromAllDrives=True,
+            supportsAllDrives=True,
+            fields="files(id, name, createdTime, modifiedTime, owners, webViewLink, driveId)",
+            orderBy="modifiedTime desc",
         )
+        if drive_id:
+            list_params["driveId"] = drive_id
+
+        results = drive_service.files().list(**list_params).execute()
 
         files = results.get("files", [])
 
