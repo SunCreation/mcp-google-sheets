@@ -502,6 +502,120 @@ _Refer to the [ID Reference Guide](#-id-reference-guide) for more information ab
 
 ---
 
+## 🔌 Usage with OpenCode
+
+Add the MCP server config to your OpenCode configuration. The config file is located at `~/.config/opencode/opencode.json`.
+
+Since this is a fork and not published to PyPI, use `uvx --from git+<repo_url>` to install directly from this GitHub repository.
+
+_Refer to the [ID Reference Guide](#-id-reference-guide) for more information about the IDs used below._
+
+<details>
+<summary>🔵 Config: Service Account (Recommended)</summary>
+
+```json
+{
+  "mcp": {
+    "google-sheets": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "--from",
+        "git+https://github.com/SunCreation/mcp-google-sheets.git",
+        "mcp-google-sheets"
+      ],
+      "environment": {
+        "SERVICE_ACCOUNT_PATH": "/full/path/to/your/service-account-key.json",
+        "DRIVE_FOLDER_ID": "your_shared_folder_id_here"
+      },
+      "enabled": true
+    }
+  }
+}
+```
+</details>
+
+<details>
+<summary>🔵 Config: OAuth 2.0</summary>
+
+```json
+{
+  "mcp": {
+    "google-sheets": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "--from",
+        "git+https://github.com/SunCreation/mcp-google-sheets.git",
+        "mcp-google-sheets"
+      ],
+      "environment": {
+        "CREDENTIALS_PATH": "/full/path/to/your/credentials.json",
+        "TOKEN_PATH": "/full/path/to/your/token.json"
+      },
+      "enabled": true
+    }
+  }
+}
+```
+*Note: A browser window will open for Google login on first use. Ensure `TOKEN_PATH` points to a writable location.*
+</details>
+
+<details>
+<summary>🔵 Config: CREDENTIALS_CONFIG (Base64 Injection)</summary>
+
+```json
+{
+  "mcp": {
+    "google-sheets": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "--from",
+        "git+https://github.com/SunCreation/mcp-google-sheets.git",
+        "mcp-google-sheets"
+      ],
+      "environment": {
+        "CREDENTIALS_CONFIG": "ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCIsCiAg...",
+        "DRIVE_FOLDER_ID": "your_shared_folder_id_here"
+      },
+      "enabled": true
+    }
+  }
+}
+```
+*Note: Paste the full Base64-encoded content of your credentials JSON file.*
+</details>
+
+<details>
+<summary>🟡 Config: Development (Running from cloned repo)</summary>
+
+```json
+{
+  "mcp": {
+    "google-sheets": {
+      "type": "local",
+      "command": [
+        "uv",
+        "run",
+        "--directory",
+        "/path/to/your/mcp-google-sheets",
+        "mcp-google-sheets"
+      ],
+      "environment": {
+        "SERVICE_ACCOUNT_PATH": "/path/to/your/service-account-key.json",
+        "DRIVE_FOLDER_ID": "your_drive_folder_id_here"
+      },
+      "enabled": true
+    }
+  }
+}
+```
+*Note: Replace `/path/to/your/mcp-google-sheets` with the actual path to your cloned repository.*
+</details>
+
+---
+
 ## 💬 Example Prompts for Claude
 
 Once connected, try prompts like:
